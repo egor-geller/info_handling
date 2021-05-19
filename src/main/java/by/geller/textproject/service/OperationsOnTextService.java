@@ -1,21 +1,22 @@
 package by.geller.textproject.service;
 
-import by.geller.textproject.entity.impl.Composite;
+import by.geller.textproject.entity.TextComponent;
+import by.geller.textproject.entity.impl.TextComposite;
 import by.geller.textproject.exception.TextException;
 
 import java.util.List;
 import java.util.Map;
 
 public interface OperationsOnTextService {
-    void paragraphSort(Composite composite);
+    List<TextComponent> paragraphSort(TextComposite textComposite) throws TextException;
 
-    String SentenceWithTheLongestWord(Composite composite) throws TextException;
+    String sentenceWithTheLongestWord(TextComposite textComposite) throws TextException;
 
-    List<String> removeSentenceUnderSomeWords(Composite composite, int amountOfWords);
+    List<String> removeSentenceUnderSomeWords(TextComposite textComposite, int amountOfWords);
 
-    Map<String, Long> countSameWords(Composite composite);
+    Map<String, Long> countSameWords(TextComposite textComposite);
 
-    int countVowels(Composite composite);
+    int countVowels(TextComposite textComposite);
 
-    int countConsonants(Composite composite);
+    int countConsonants(TextComposite textComposite);
 }
