@@ -2,26 +2,19 @@ package by.geller.textproject.parser.impl;
 
 import by.geller.textproject.entity.ComponentType;
 import by.geller.textproject.entity.impl.TextComposite;
-import by.geller.textproject.parser.TextParser;
+import by.geller.textproject.parser.AbstractTextParser;
 
-public class ParagraphParser implements TextParser {
-    private static final String PARAGRAPH_SPLIT_PATTERN = "\\n+|\\t+|\\s{2,}";
-    private final TextParser nextParse;
-
-    public ParagraphParser(TextParser nextParse){
-        this.nextParse = nextParse;
-    }
+public class ParagraphParser extends AbstractTextParser {
+    private static final String PARAGRAPH_SPLIT_PATTERN = "\\s{2,}";
 
     @Override
-    public void parseText(TextComposite textComposite, String dataToParse) {
-        String[] paragraphs = dataToParse.split(PARAGRAPH_SPLIT_PATTERN);
+    public TextComposite parse(String data) {
+        String[] paragraphs = data.split(PARAGRAPH_SPLIT_PATTERN);
+        var composite = new TextComposite(ComponentType.PARAGRAPH);
         for (String paragraph : paragraphs) {
-            TextComposite paragraphContent = new TextComposite(ComponentType.PARAGRAPH);
-            textComposite.add(paragraphContent);
-
-            if (nextParse != null){
-                nextParse.parseText(paragraphContent, paragraph);
-            }
+            TextComposite nextComposite = nextParser.parse(paragraph);
+            composite.add(nextComposite);
         }
+        return composite;
     }
 }

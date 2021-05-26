@@ -1,7 +1,7 @@
 package by.geller.textproject.exception;
 
-public class TextException extends Exception{
-    public TextException(){
+public class TextException extends Exception {
+    public TextException() {
         super();
     }
 

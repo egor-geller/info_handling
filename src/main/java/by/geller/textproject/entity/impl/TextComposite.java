@@ -11,7 +11,7 @@ public class TextComposite implements TextComponent {
     private final ArrayList<TextComponent> textComponents = new ArrayList<>();
     private final ComponentType componentType;
 
-    public TextComposite(ComponentType componentType){
+    public TextComposite(ComponentType componentType) {
         this.componentType = componentType;
     }
 
@@ -28,6 +28,10 @@ public class TextComposite implements TextComponent {
     @Override
     public ComponentType getType() {
         return componentType;
+    }
+
+    public int getSizeOfComponent() {
+        return textComponents.size();
     }
 
     @Override
@@ -55,7 +59,7 @@ public class TextComposite implements TextComponent {
     @Override
     public String toString() {
         var stringBuilder = new StringBuilder();
-        for (TextComponent textComponent : textComponents){
+        for (TextComponent textComponent : textComponents) {
             stringBuilder.append(textComponent);
         }
         return stringBuilder.toString();

@@ -7,11 +7,9 @@ import java.util.List;
 
 public class CharacterLeaf implements TextComponent {
     private final char character;
-    private final ComponentType componentType;
 
-    public CharacterLeaf(char character, ComponentType componentType){
-        this.componentType = componentType;
-        this.character = character;
+    public CharacterLeaf(String character) {
+        this.character = character.charAt(0);
     }
 
     @Override
@@ -26,7 +24,12 @@ public class CharacterLeaf implements TextComponent {
 
     @Override
     public ComponentType getType() {
-        return componentType;
+        return ComponentType.SYMBOL;
+    }
+
+    @Override
+    public int getSizeOfComponent() {
+        return 1;
     }
 
     @Override
@@ -43,7 +46,6 @@ public class CharacterLeaf implements TextComponent {
     public int hashCode() {
         var hash = 7;
         hash += hash * 31 + Character.hashCode(character);
-        hash += hash * 31 + componentType.hashCode();
         return hash;
     }
 
@@ -52,6 +54,6 @@ public class CharacterLeaf implements TextComponent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CharacterLeaf that = (CharacterLeaf) o;
-        return character == that.character && componentType == that.componentType;
+        return character == that.character;
     }
 }

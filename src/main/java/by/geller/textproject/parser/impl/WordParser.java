@@ -2,27 +2,19 @@ package by.geller.textproject.parser.impl;
 
 import by.geller.textproject.entity.ComponentType;
 import by.geller.textproject.entity.impl.TextComposite;
-import by.geller.textproject.parser.TextParser;
+import by.geller.textproject.parser.AbstractTextParser;
 
-public class WordParser implements TextParser {
-    private static final String WORD_SPLIT_REGEX = "(\\w+)";
-    private TextParser nextParse;
-
-    public WordParser(TextParser nextParse){
-        this.nextParse = nextParse;
-    }
+public class WordParser extends AbstractTextParser {
+    private static final String WORD_SPLIT_REGEX = "(\\W+)";
 
     @Override
-    public void parseText(TextComposite textComposite, String dataToParse) {
-        String[] sentences = dataToParse.split(WORD_SPLIT_REGEX);
-
-        for (String sentence : sentences) {
-            var sentenceComponent = new TextComposite(ComponentType.WORD);
-            textComposite.add(sentenceComponent);
-
-            if (nextParse != null) {
-                nextParse.parseText(sentenceComponent, sentence);
-            }
+    public TextComposite parse(String data) {
+        String[] words = data.split(WORD_SPLIT_REGEX);
+        var composite = new TextComposite(ComponentType.WORD);
+        for (String word : words) {
+            TextComposite nextComposite = nextParser.parse(word);
+            composite.add(nextComposite);
         }
+        return composite;
     }
 }

@@ -12,7 +12,7 @@ public interface OperationsOnTextService {
 
     String sentenceWithTheLongestWord(TextComposite textComposite) throws TextException;
 
-    List<String> removeSentenceUnderSomeWords(TextComposite textComposite, int amountOfWords);
+    List<TextComponent> removeSentenceUnderSomeWords(TextComposite textComposite, int amountOfCharacters) throws TextException;
 
     Map<String, Long> countSameWords(TextComposite textComposite);
 

@@ -1,18 +1,17 @@
 package by.geller.textproject._main;
 
-
-import by.geller.textproject.entity.ComponentType;
-
-import by.geller.textproject.entity.impl.TextComposite;
 import by.geller.textproject.exception.TextException;
 import by.geller.textproject.parser.impl.*;
 import by.geller.textproject.reader.ReadText;
+import by.geller.textproject.service.OperationsOnTextService;
+import by.geller.textproject.service.impl.OperationsOnTextServiceImpl;
+import org.apache.logging.log4j.LogManager;
 
 public class Main {
     public static void main(String[] args) {
-        //TODO: how to read to chain?
+        final var logger = LogManager.getLogger();
         var pathToFile = "src/main/resources/file/file1.txt";
-        StringBuilder textFromFile = new StringBuilder();
+        var textFromFile = new StringBuilder();
         var readText = new ReadText();
         try {
             textFromFile = readText.readFromFile(pathToFile);
@@ -20,15 +19,27 @@ public class Main {
             e.getStackTrace();
         }
 
-        LetterParser letterParser = new LetterParser();
-        WordParser wordParser = new WordParser(letterParser);
-        LexemeParser lexemeParser = new LexemeParser(letterParser);
-        SentenceParser sentenceParser = new SentenceParser(wordParser);
-        ParagraphParser paragraphParser = new ParagraphParser(sentenceParser);
+        var symbolParser = new SymbolParser();
+        var wordParser = new WordParser();
+        var lexemeParser = new LexemeParser();
+        var sentenceParser = new SentenceParser();
+        var paragraphParser = new ParagraphParser();
 
-        TextComposite component = new TextComposite(ComponentType.TEXT);
-        paragraphParser.parseText(component, textFromFile.toString());
-        System.out.println(paragraphParser);
+        paragraphParser.setNextParser(sentenceParser);
+        sentenceParser.setNextParser(lexemeParser);
+        lexemeParser.setNextParser(wordParser);
+        wordParser.setNextParser(symbolParser);
+
+        var composite = wordParser.parse(textFromFile.toString());
+
+        logger.info(composite);
+        System.out.println("Word ==============================================");
+        System.out.println(composite);
+        System.out.println("Operations ==============================================");
+
+        OperationsOnTextService operations = new OperationsOnTextServiceImpl();
+
+        System.out.println(operations.countVowels(composite));
 
     }
 }

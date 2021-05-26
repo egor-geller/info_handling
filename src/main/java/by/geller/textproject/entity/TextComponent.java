@@ -9,5 +9,7 @@ public interface TextComponent {
 
     ComponentType getType();
 
+    int getSizeOfComponent();
+
     List<TextComponent> getListOfChildren();
 }

@@ -18,12 +18,11 @@ import static java.util.stream.Collectors.counting;
 public class OperationsOnTextServiceImpl implements OperationsOnTextService {
     private static final Logger logger = LogManager.getLogger();
 
-    private String ERROR_MESSAGE = "There is no composite == null";
-    private String DOT_REGEX = "\\.";
-    private String NOT_A_WORD_REGEX = "\\W+";
-    private String VOWELS_REGEX = "(?i)[aeiou]+";
-    private String CONSONANTS_REGEX = "(?i)[^aeiou]+";
-    private String NEW_LINE_REGEX = "\\n";
+    private static final String ERROR_MESSAGE = "There is no composite == null";
+    private static final String DOT_REGEX = "\\.";
+    private static final String NOT_A_WORD_REGEX = "\\W+";
+    private static final String VOWELS_REGEX = "aeiouауоиЭы";
+    private static final String CONSONANTS_REGEX = "BCDFGHJKLMNPQRSTVWXYZ";
 
     @Override
     public List<TextComponent> paragraphSort(TextComposite textComposite) throws TextException {
@@ -31,12 +30,12 @@ public class OperationsOnTextServiceImpl implements OperationsOnTextService {
             throw new TextException("Expected component of text type: " + textComposite.getType());
         }
 
-        List<TextComponent> a = textComposite.getListOfChildren()
+        List<TextComponent> sortedParagraph = textComposite.getListOfChildren()
                 .stream()
                 .filter(textComponent -> matchesType(textComponent, ComponentType.PARAGRAPH))
                 .sorted(new ParagraphComparator())
                 .collect(Collectors.toList());
-        return a;
+        return sortedParagraph;
     }
 
     @Override
@@ -51,20 +50,44 @@ public class OperationsOnTextServiceImpl implements OperationsOnTextService {
         var position = 0;
         for (var i = 0; i < text.length; i++) {
             for (String word : text[i].split(NOT_A_WORD_REGEX)) {
-                if(longWord < word.length()){
+                if (longWord < word.length()) {
                     longWord = word.length();
                     position = i;
                 }
             }
         }
-        String sentence = text[position];
-        return sentence;
+        return text[position];
     }
 
-    //TODO
     @Override
-    public List<String> removeSentenceUnderSomeWords(TextComposite textComposite, int amountOfWords) {
-        return null;
+    public List<TextComponent> removeSentenceUnderSomeWords(TextComposite textComposite, int amountOfCharacters) throws TextException {
+        if (textComposite == null) {
+            logger.error("Composite is null");
+            throw new TextException("Composite is null");
+        } else if (!textComposite.getType().equals(ComponentType.PARAGRAPH)) {
+            logger.error("Search must be in paragraph {}", textComposite.getType());
+            throw new TextException("Search must be in paragraph " + textComposite.getType());
+        }
+        List<TextComponent> paragraphs = textComposite.getListOfChildren();
+        List<TextComponent> clearedSentences = new ArrayList<>();
+
+        for (TextComponent component : paragraphs) {
+            List<TextComponent> sentences = component.getListOfChildren();
+            clearedSentences.addAll(sentences);
+        }
+        for (TextComponent sentence : clearedSentences) {
+            List<TextComponent> lexemes = sentence.getListOfChildren();
+            for (TextComponent lexeme : lexemes) {
+                List<TextComponent> words = lexeme.getListOfChildren();
+                for (TextComponent word : words) {
+                    if (word.getType().equals(ComponentType.SYMBOL) && word.getSizeOfComponent() < amountOfCharacters) {
+                        clearedSentences.remove(sentence);
+                    }
+                }
+            }
+        }
+        logger.info("Text without words with a length of {} : {}", amountOfCharacters, clearedSentences);
+        return clearedSentences;
     }
 
     @Override
@@ -76,22 +99,38 @@ public class OperationsOnTextServiceImpl implements OperationsOnTextService {
     @Override
     public int countVowels(TextComposite textComposite) {
         var count = 0;
-        for (String line : textComposite.toString().split(NOT_A_WORD_REGEX)) {
-            if (line.contains(VOWELS_REGEX)){
-                count++;
+        String[] lines = textComposite.toString().split(NOT_A_WORD_REGEX);
+        for (String line : lines) {
+            for (var j = 0; j < line.length(); j++) {
+                if (Character.isLetter(line.charAt(j))){
+                    for (var i = 0; i < VOWELS_REGEX.length(); i++) {
+                        if (line.charAt(j) == VOWELS_REGEX.toLowerCase().charAt(i)){
+                            count++;
+                        }
+                    }
+                }
             }
         }
+        logger.info("{} Vowels counted", count);
         return count;
     }
 
     @Override
     public int countConsonants(TextComposite textComposite) {
         var count = 0;
-        for (String line : textComposite.toString().split(NOT_A_WORD_REGEX)) {
-            if (line.contains(CONSONANTS_REGEX)){
-                count++;
+        String[] lines = textComposite.toString().split(NOT_A_WORD_REGEX);
+        for (String line : lines) {
+            for (var j = 0; j < line.length(); j++) {
+                if (Character.isLetter(line.charAt(j))){
+                    for (var i = 0; i < CONSONANTS_REGEX.length(); i++) {
+                        if (line.charAt(j) == CONSONANTS_REGEX.toLowerCase().charAt(i)){
+                            count++;
+                        }
+                    }
+                }
             }
         }
+        logger.info("{} Consonants counted", count);
         return count;
     }
 

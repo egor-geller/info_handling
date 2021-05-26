@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 
 public class ReadText {
     private static final Logger logger = LogManager.getLogger();
-    String ERROR_IN_READING = "Problem in reading from file";
+    private static final String ERROR_IN_READING = "Problem in reading from file";
 
     public StringBuilder readFromFile(String pathToFile) throws TextException {
         var someText = new StringBuilder();
